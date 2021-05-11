@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-# This is snake, but worse
 # This software is licensed under the GPL3
+# You should have gotten an copy of the GPL3 license anlonside this software
+# Feel free to contribute what ever you want to this game
+# You can contribute here: https://github.com/lxgr-linux/scrape
 
 import scrap_engine as se
 import threading, time, random, os, sys
