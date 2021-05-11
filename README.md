@@ -1,8 +1,15 @@
 # Scrape
-![Demo](../pics/demo.gif)
+![Demo](pics/demo.gif)
 
 ## Installation
-Move ```./examples/scrape.py``` into the parent directory or make sure scrap_engine.py is in it's path
+For linux just do this:
+```Shell
+$ git clone https://github.com/lxgr-linux/scrap_engine.git
+$ git clone https://github.com/lxgr-linux/scrape.git
+$ cp ./scrap_engine/scrap_engine.py ./scrape
+$ ./scrape/scrape.py
+```
+For windows first install pynput and then do a windows equivalent to the above.
 
 ## What the game is about
 Scrape is basicaly a clone of the snake game, but with some additional modes. The Main goal of the player is to eat as many apples while not dieing.
