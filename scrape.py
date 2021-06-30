@@ -5,7 +5,7 @@
 # You can contribute here: https://github.com/lxgr-linux/scrape
 
 import scrap_engine as se
-import threading, time, random, os, sys
+import threading, time, random, os, sys, socket
 from pathlib import Path
 
 # relevant classes
@@ -134,6 +134,27 @@ else:
             with Listener(on_press=on_press) as listener:
                 listener.join()
 
+def net_input():
+    global ev
+    import socket
+
+    HOST = ''  # Standard loopback interface address (localhost)
+    PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+            #print('Connected by', addr)
+            while True:
+                while True:
+                    data = conn.recv(1024)
+                    if not data:
+                        break
+                    ev.append(data.decode())
+
+
 # star level declarations
 def level_normal():
     global genframe0, genframe1, framenum
@@ -169,6 +190,9 @@ def level_hard():
         genframe2+=300
 
 def level_multi():
+    level_normal()
+
+def level_net_multi():
     level_normal()
 
 def level_senior():
@@ -235,6 +259,35 @@ def level_multi_init():
     snake2.walkframe=0
     snake2.walkstep=5
     snakes.append(snake2)
+
+def level_net_multi_init():
+    global Start
+    class Start(Start_master):
+        def bump_action(self):
+            global kill
+            kill=self.group
+            dead()
+
+    snake2=se.ObjectGroup([])
+    snake2.symbol="\033[34m#\033[0m"
+    start2=Start(snake2.symbol)
+    start2.add(map, int(map.width/2-5), int(map.height/2))
+    runner2_0=Start(snake2.symbol)
+    runner2_1=Start(snake2.symbol)
+    runner2_0.add(map, int(map.width/2-5), int(map.height/2)+1)
+    runner2_1.add(map, int(map.width/2-5), int(map.height/2)+2)
+    start2.direction="t"
+    start2.key_t="e'w'"
+    start2.key_b="e's'"
+    start2.key_l="e'a'"
+    start2.key_r="e'd'"
+    start2.is_set = False
+    snake2.add_obs([start2, runner2_0, runner2_1])
+    snake2.color="blue"
+    snake2.walkframe=0
+    snake2.walkstep=5
+    snakes.append(snake2)
+
 # end level declarations
 
 def menuresize(map, box):
@@ -255,7 +308,7 @@ def dead():
     deadmenuind.index=1
     menuresize(deadmap, deadbox)
     # text labels for multi mode
-    if mode == "multi":
+    if mode in ["multi", "net_multi"]:
         scores=sorted([len(group.obs) for group in snakes])
         score=scores[-1]
         if kill != "":
@@ -467,7 +520,7 @@ def main():
 
 
 mode="normal"
-modes=["normal", "single", "easy", "hard", "multi", "really_fucking_easy", "senior"]
+modes=["normal", "single", "easy", "hard", "multi", "really_fucking_easy", "senior", "net_multi"]
 
 # makes sure fie is there
 home=str(Path.home())
@@ -528,6 +581,9 @@ os.system("")
 recognising=threading.Thread(target=recogniser)
 recognising.daemon=True
 recognising.start()
+net=threading.Thread(target=net_input)
+net.daemon=True
+net.start()
 
 try:
     main()
