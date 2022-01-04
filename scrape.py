@@ -101,7 +101,7 @@ def blockgen():
 def exiter():
     global do_exit
     do_exit=True
-    exit()
+    sys.exit()
 
 # keyboard input management
 def on_press(key):
