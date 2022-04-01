@@ -13,19 +13,7 @@ class Start_master(se.Object):
     def bump_action(self):
         dead()
 
-    def bump(self, ob, x, y):
-        self.bump_action()
-
-    def bump_right(self):
-        self.bump_action()
-
-    def bump_left(self):
-        self.bump_action()
-
-    def bump_top(self):
-        self.bump_action()
-
-    def bump_bottom(self):
+    def bump(self, ob, x, y, side=False):
         self.bump_action()
 
     def pull_ob(self):
@@ -42,8 +30,11 @@ class Start_easy(Start_master):
         elif self.y == self.map.height-1 and self.direction == 'b':
             self.set(self.x, 0)
 
-    def bump(self, ob, x, y):
-        dead()
+    def bump(self, ob, x, y, side=False):
+        if side:
+            self.bump_action()
+        else:
+            dead()
 
 
 class Apple(se.Object):
